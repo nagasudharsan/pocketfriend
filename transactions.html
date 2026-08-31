@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Transactions History - Pocket Friend</title>
+  <meta name="description"
+    content="View, search, filter, edit, and manage all your student pocket money income and expense transactions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- PWA & Mobile Meta -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <img src="img/wallet.avif" alt="Pocket Friend Icon">
+        </div>
+        <div class="brand-title-group">
+          <span class="title">Pocket Friend</span>
+          <span class="tagline">Student Money Manager</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item" data-page="home">
+          <a href="dashboard.html"><span class="nav-icon">🏠</span> <span>Dashboard</span></a>
+        </li>
+        <li class="nav-item active" data-page="transactions">
+          <a href="transactions.html"><span class="nav-icon">💳</span> <span>Transactions</span></a>
+        </li>
+        <li class="nav-item" data-page="add">
+          <a href="add-transaction.html"><span class="nav-icon">➕</span> <span>Add Transaction</span></a>
+        </li>
+        <li class="nav-item" data-page="budget">
+          <a href="budget.html"><span class="nav-icon">📊</span> <span>Monthly Budget</span></a>
+        </li>
+        <li class="nav-item" data-page="savings">
+          <a href="savings.html"><span class="nav-icon">🎯</span> <span>Savings Goals</span></a>
+        </li>
+        <li class="nav-item" data-page="reports">
+          <a href="reports.html"><span class="nav-icon">📈</span> <span>Reports & Charts</span></a>
+        </li>
+        <li class="nav-item" data-page="profile">
+          <a href="profile.html"><span class="nav-icon">👤</span> <span>Profile & Settings</span></a>
+        </li>
+        <li class="nav-item" data-page="help">
+          <a href="help.html"><span class="nav-icon">❓</span> <span>Help & FAQ</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="user-avatar-circle">A</div>
+        <div class="user-info-text">
+          <div class="user-name user-name-display">Alex Sharma</div>
+          <div class="user-role">Student Account</div>
+        </div>
+        <button class="btn-logout" title="Log Out"
+          style="font-size: 18px; color: var(--text-muted); padding: 4px;">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Viewport -->
+    <div class="main-viewport">
+
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-greeting">
+            <h2>Transaction Activity 💳</h2>
+            <p>Full record of your pocket money and student spending.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <a href="add-transaction.html" class="btn btn-primary btn-sm desktop-only">+ Add Transaction</a>
+          <button id="btn-export-csv" class="btn btn-secondary btn-sm" title="Export CSV">📥 Export CSV</button>
+          <button class="header-icon-btn theme-toggle-btn" title="Toggle Theme">☀️</button>
+        </div>
+      </header>
+
+      <!-- Page Content Body -->
+      <main class="page-content-body">
+
+        <!-- Metrics Overview Strip -->
+        <div class="card"
+          style="padding: 16px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+            <div>
+              <span
+                style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Showing</span>
+              <div id="filtered-count" style="font-size: 16px; font-weight: 800; color: var(--text-main);">0 records
+              </div>
+            </div>
+            <div>
+              <span
+                style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Total
+                Income in View</span>
+              <div id="filtered-income" style="font-size: 16px; font-weight: 800; color: var(--success);">+₹0</div>
+            </div>
+            <div>
+              <span
+                style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Total
+                Spent in View</span>
+              <div id="filtered-expense" style="font-size: 16px; font-weight: 800; color: var(--danger);">-₹0</div>
+            </div>
+          </div>
+
+          <div class="filter-pills-bar" style="margin-bottom: 0; padding: 0;">
+            <button type="button" class="filter-pill active" data-type="all"
+              onclick="selectTypeFilter('all')">All</button>
+            <button type="button" class="filter-pill pill-income" data-type="income"
+              onclick="selectTypeFilter('income')">💰 Income</button>
+            <button type="button" class="filter-pill pill-expense" data-type="expense"
+              onclick="selectTypeFilter('expense')">💸 Expense</button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+          <div class="search-bar-wrap">
+            <span class="search-bar-icon">🔍</span>
+            <input type="text" id="tx-search" placeholder="Search by note, item, category, amount, UPI...">
+          </div>
+
+          <select id="tx-category-filter" class="form-control" style="width: auto; min-width: 150px;">
+            <option value="all">All Categories</option>
+            <option value="Food">🍔 Food</option>
+            <option value="Transport">🚌 Transport</option>
+            <option value="Education">📚 Education</option>
+            <option value="Entertainment">🎮 Entertainment</option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Bills">⚡ Bills</option>
+            <option value="Pocket Money">💰 Allowance</option>
+            <option value="Parents">👨‍👩‍👧 Parents</option>
+            <option value="Gift">🎁 Gift</option>
+            <option value="Scholarship">🎓 Scholarship</option>
+            <option value="Other">✨ Other</option>
+          </select>
+
+          <select id="tx-sort-filter" class="form-control" style="width: auto; min-width: 140px;">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="highest">Highest Amount</option>
+            <option value="lowest">Lowest Amount</option>
+          </select>
+        </div>
+
+        <!-- Desktop Data Table Container -->
+        <div id="tx-table-container" class="card desktop-only"
+          style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-table-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card List Container -->
+        <div id="transactions-mobile-container" class="tx-list mobile-only" style="margin-bottom: 20px;">
+          <!-- Dynamically populated cards -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="tx-empty-state" class="empty-state card" style="display: none;">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">No transactions found</div>
+          <div class="empty-desc">Try clearing your search query or adjusting your filters.</div>
+          <a href="add-transaction.html" class="btn btn-sm btn-primary">+ Add New Transaction</a>
+        </div>
+
+      </main>
+
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item" data-page="home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="transactions.html" class="nav-item active" data-page="transactions">
+        <span class="nav-icon">💳</span>
+        <span class="nav-label">Transactions</span>
+      </a>
+      <a href="add-transaction.html" class="nav-item nav-item-add" data-page="add" title="Add Transaction">
+        <div class="nav-fab-btn">➕</div>
+        <span class="nav-label">Add</span>
+      </a>
+      <a href="budget.html" class="nav-item" data-page="budget">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Budget</span>
+      </a>
+      <a href="profile.html" class="nav-item" data-page="profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Edit / Delete Bottom Sheet & Modal -->
+  <div id="edit-tx-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Transaction</h3>
+        <button class="modal-close-btn" id="edit-modal-close">&times;</button>
+      </div>
+
+      <form id="edit-tx-form">
+        <input type="hidden" id="edit-tx-id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-tx-type" class="form-label">Type</label>
+            <select id="edit-tx-type" class="form-control" required>
+              <option value="income">💰 Income (+)</option>
+              <option value="expense">💸 Expense (-)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-tx-amount" class="form-label">Amount (₹)</label>
+            <input type="number" id="edit-tx-amount" class="form-control" min="1" step="any" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-tx-category" class="form-label">Category</label>
+            <select id="edit-tx-category" class="form-control" required>
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Education">Education</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Bills">Bills</option>
+              <option value="Pocket Money">Pocket Money</option>
+              <option value="Parents">Parents</option>
+              <option value="Gift">Gift</option>
+              <option value="Scholarship">Scholarship</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-tx-payment" class="form-label">Payment Method</label>
+            <select id="edit-tx-payment" class="form-control">
+              <option value="UPI">UPI</option>
+              <option value="Cash">Cash</option>
+              <option value="Card">Card</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-tx-date" class="form-label">Date</label>
+          <input type="date" id="edit-tx-date" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-tx-desc" class="form-label">Description</label>
+          <input type="text" id="edit-tx-desc" class="form-control" required>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="edit-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/transactions.js"></script>
+</body>
+
+</html>

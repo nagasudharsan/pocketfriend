@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Add Transaction - Pocket Friend</title>
+  <meta name="description" content="Add income or expense transactions in Pocket Friend.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- PWA & Mobile Meta -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <img src="img/wallet.avif" alt="Pocket Friend Icon">
+        </div>
+        <div class="brand-title-group">
+          <span class="title">Pocket Friend</span>
+          <span class="tagline">Student Money Manager</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item" data-page="home">
+          <a href="dashboard.html"><span class="nav-icon">🏠</span> <span>Dashboard</span></a>
+        </li>
+        <li class="nav-item" data-page="transactions">
+          <a href="transactions.html"><span class="nav-icon">💳</span> <span>Transactions</span></a>
+        </li>
+        <li class="nav-item active" data-page="add">
+          <a href="add-transaction.html"><span class="nav-icon">➕</span> <span>Add Transaction</span></a>
+        </li>
+        <li class="nav-item" data-page="budget">
+          <a href="budget.html"><span class="nav-icon">📊</span> <span>Monthly Budget</span></a>
+        </li>
+        <li class="nav-item" data-page="savings">
+          <a href="savings.html"><span class="nav-icon">🎯</span> <span>Savings Goals</span></a>
+        </li>
+        <li class="nav-item" data-page="reports">
+          <a href="reports.html"><span class="nav-icon">📈</span> <span>Reports & Charts</span></a>
+        </li>
+        <li class="nav-item" data-page="profile">
+          <a href="profile.html"><span class="nav-icon">👤</span> <span>Profile & Settings</span></a>
+        </li>
+        <li class="nav-item" data-page="help">
+          <a href="help.html"><span class="nav-icon">❓</span> <span>Help & FAQ</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="user-avatar-circle">A</div>
+        <div class="user-info-text">
+          <div class="user-name user-name-display">Alex Sharma</div>
+          <div class="user-role">Student Account</div>
+        </div>
+        <button class="btn-logout" title="Log Out"
+          style="font-size: 18px; color: var(--text-muted); padding: 4px;">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Viewport -->
+    <div class="main-viewport">
+
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <a href="dashboard.html" class="btn-back mobile-only" title="Back">←</a>
+          <div class="topbar-greeting">
+            <h2 id="page-title-text">Add New Transaction</h2>
+            <p>Record your pocket money allowance or daily expenses.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <a href="dashboard.html" class="btn btn-secondary btn-sm desktop-only">&larr; Back to Dashboard</a>
+          <button class="header-icon-btn theme-toggle-btn" title="Toggle Theme">☀️</button>
+        </div>
+      </header>
+
+      <!-- Page Content Body -->
+      <main class="page-content-body" style="max-width: 680px;">
+
+        <div class="card" style="padding: 28px 24px;">
+
+          <!-- Segmented Type Switcher: Expense vs Income -->
+          <div class="segmented-switch" id="tx-type-switch">
+            <button type="button" class="segmented-btn active expense" id="btn-type-expense"
+              onclick="switchTxType('expense')">
+              💸 Record Expense
+            </button>
+            <button type="button" class="segmented-btn income" id="btn-type-income" onclick="switchTxType('income')">
+              💰 Add Pocket Money
+            </button>
+          </div>
+
+          <form id="unified-transaction-form" novalidate>
+            <input type="hidden" id="tx-type" value="expense">
+
+            <!-- Big Amount Input Card -->
+            <div class="card"
+              style="background: var(--bg-surface); border: 1.5px solid var(--border-light); padding: 18px; margin-bottom: 20px; text-align: center;">
+              <span class="stat-label" style="display: block; margin-bottom: 4px;">Enter Amount</span>
+              <div class="big-amount-row">
+                <span class="big-currency-sym">₹</span>
+                <input type="number" id="tx-amount" class="big-amount-input" placeholder="0" min="1" step="any" required
+                  autofocus inputmode="decimal">
+              </div>
+              <div class="quick-amount-chips">
+                <button type="button" class="amount-chip" onclick="addAmountValue(50)">+₹50</button>
+                <button type="button" class="amount-chip" onclick="addAmountValue(100)">+₹100</button>
+                <button type="button" class="amount-chip" onclick="addAmountValue(200)">+₹200</button>
+                <button type="button" class="amount-chip" onclick="addAmountValue(500)">+₹500</button>
+                <button type="button" class="amount-chip" onclick="addAmountValue(1000)">+₹1,000</button>
+              </div>
+            </div>
+
+            <!-- Category Selector Chips -->
+            <div class="form-group">
+              <label class="form-label">Category *</label>
+              <input type="hidden" id="tx-category" value="Food">
+
+              <!-- Expense Categories -->
+              <div id="expense-categories-grid" class="category-chips-grid">
+                <button type="button" class="category-chip-btn selected" data-cat="Food"
+                  onclick="selectCategory('Food')">
+                  <span class="cat-icon">🍔</span>
+                  <span class="cat-name">Food</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Transport"
+                  onclick="selectCategory('Transport')">
+                  <span class="cat-icon">🚌</span>
+                  <span class="cat-name">Transport</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Education"
+                  onclick="selectCategory('Education')">
+                  <span class="cat-icon">📚</span>
+                  <span class="cat-name">Education</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Entertainment"
+                  onclick="selectCategory('Entertainment')">
+                  <span class="cat-icon">🎮</span>
+                  <span class="cat-name">Entertainment</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Shopping"
+                  onclick="selectCategory('Shopping')">
+                  <span class="cat-icon">🛍️</span>
+                  <span class="cat-name">Shopping</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Bills" onclick="selectCategory('Bills')">
+                  <span class="cat-icon">⚡</span>
+                  <span class="cat-name">Bills</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Other" onclick="selectCategory('Other')">
+                  <span class="cat-icon">✨</span>
+                  <span class="cat-name">Other</span>
+                </button>
+                <button type="button" class="category-chip-btn" id="btn-add-category" onclick="openAddCategoryModal()" style="border-style: dashed; border-color: rgba(99, 102, 241, 0.45); background: rgba(99, 102, 241, 0.05);">
+                  <span class="cat-icon" style="color: var(--primary);">➕</span>
+                  <span class="cat-name" style="color: var(--primary);">Add Category</span>
+                </button>
+              </div>
+
+              <!-- Income Categories -->
+              <div id="income-categories-grid" class="category-chips-grid" style="display: none;">
+                <button type="button" class="category-chip-btn selected" data-cat="Pocket Money"
+                  onclick="selectCategory('Pocket Money')">
+                  <span class="cat-icon">💰</span>
+                  <span class="cat-name">Allowance</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Parents" onclick="selectCategory('Parents')">
+                  <span class="cat-icon">👨‍👩‍👧</span>
+                  <span class="cat-name">Parents</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Gift" onclick="selectCategory('Gift')">
+                  <span class="cat-icon">🎁</span>
+                  <span class="cat-name">Gift</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Scholarship"
+                  onclick="selectCategory('Scholarship')">
+                  <span class="cat-icon">🎓</span>
+                  <span class="cat-name">Scholarship</span>
+                </button>
+                <button type="button" class="category-chip-btn" data-cat="Other" onclick="selectCategory('Other')">
+                  <span class="cat-icon">✨</span>
+                  <span class="cat-name">Other</span>
+                </button>
+                <button type="button" class="category-chip-btn" id="btn-add-income-category" onclick="openAddCategoryModal()" style="border-style: dashed; border-color: rgba(99, 102, 241, 0.45); background: rgba(99, 102, 241, 0.05);">
+                  <span class="cat-icon" style="color: var(--primary);">➕</span>
+                  <span class="cat-name" style="color: var(--primary);">Add Category</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Description Note -->
+            <div class="form-group">
+              <label for="tx-desc" class="form-label">Description / Note</label>
+              <input type="text" id="tx-desc" class="form-control"
+                placeholder="e.g. Canteen lunch, metro card recharge, monthly allowance">
+            </div>
+
+            <!-- Date & Payment Method Row -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tx-date" class="form-label">Date *</label>
+                <input type="date" id="tx-date" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="tx-payment-method" class="form-label">Payment Method</label>
+                <select id="tx-payment-method" class="form-control">
+                  <option value="UPI" selected>📱 UPI (GPay / PhonePe / Paytm)</option>
+                  <option value="Cash">💵 Cash</option>
+                  <option value="Card">💳 Debit / ATM Card</option>
+                  <option value="Other">✨ Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div style="margin-top: 10px;">
+              <button type="submit" id="btn-save-tx" class="btn btn-danger btn-block btn-lg">
+                💸 Save Expense
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+
+      </main>
+
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item" data-page="home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="transactions.html" class="nav-item" data-page="transactions">
+        <span class="nav-icon">💳</span>
+        <span class="nav-label">Transactions</span>
+      </a>
+      <a href="add-transaction.html" class="nav-item nav-item-add active" data-page="add" title="Add Transaction">
+        <div class="nav-fab-btn">➕</div>
+        <span class="nav-label">Add</span>
+      </a>
+      <a href="budget.html" class="nav-item" data-page="budget">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Budget</span>
+      </a>
+      <a href="profile.html" class="nav-item" data-page="profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Create New Category Modal -->
+  <div id="add-category-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Category</h3>
+        <button type="button" class="modal-close-btn" onclick="closeAddCategoryModal()">&times;</button>
+      </div>
+
+      <form id="add-category-form" onsubmit="handleCreateCategorySubmit(event)">
+        <div class="form-group" style="margin-bottom: 22px;">
+          <label for="new-category-input" class="form-label">Category Name *</label>
+          <input type="text" id="new-category-input" class="form-control" placeholder="Enter category name (e.g. Gym, Travel, Snacks)" required maxlength="30" autocomplete="off">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddCategoryModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    let currentMode = 'expense';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!checkAuth(true)) return;
+      setupLayout('add');
+
+      const dateInput = document.getElementById('tx-date');
+      if (dateInput) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+      }
+
+      // Render custom categories
+      renderCustomCategories();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const requestedType = urlParams.get('type');
+      if (requestedType === 'income') {
+        switchTxType('income');
+      } else {
+        switchTxType('expense');
+      }
+
+      const form = document.getElementById('unified-transaction-form');
+      if (form) {
+        form.addEventListener('submit', handleTransactionSubmit);
+      }
+    });
+
+    function renderCustomCategories(selectedCat = null) {
+      // 1. Render Expense Custom Categories
+      const expenseContainer = document.getElementById('expense-categories-grid');
+      if (expenseContainer) {
+        const addExpenseBtn = document.getElementById('btn-add-category');
+        expenseContainer.querySelectorAll('.custom-dynamic-cat-btn').forEach(el => el.remove());
+
+        const customExpenseCats = getUserCustomCategories();
+        customExpenseCats.forEach(catName => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'category-chip-btn custom-dynamic-cat-btn';
+          btn.setAttribute('data-cat', catName);
+          btn.onclick = () => selectCategory(catName);
+          btn.innerHTML = `
+            <button type="button" class="cat-remove-btn" title="Remove Category" onclick="handleRemoveCategory(event, '${escapeHtml(catName)}');">&minus;</button>
+            <span class="cat-icon">🏷️</span>
+            <span class="cat-name">${escapeHtml(catName)}</span>
+          `;
+          if (addExpenseBtn) {
+            expenseContainer.insertBefore(btn, addExpenseBtn);
+          } else {
+            expenseContainer.appendChild(btn);
+          }
+        });
+      }
+
+      // 2. Render Income Custom Categories
+      const incomeContainer = document.getElementById('income-categories-grid');
+      if (incomeContainer) {
+        const addIncomeBtn = document.getElementById('btn-add-income-category');
+        incomeContainer.querySelectorAll('.custom-dynamic-income-cat-btn').forEach(el => el.remove());
+
+        const customIncomeCats = getUserCustomIncomeCategories();
+        customIncomeCats.forEach(catName => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'category-chip-btn custom-dynamic-income-cat-btn';
+          btn.setAttribute('data-cat', catName);
+          btn.onclick = () => selectCategory(catName);
+          btn.innerHTML = `
+            <button type="button" class="cat-remove-btn" title="Remove Category" onclick="handleRemoveIncomeCategory(event, '${escapeHtml(catName)}');">&minus;</button>
+            <span class="cat-icon">🏷️</span>
+            <span class="cat-name">${escapeHtml(catName)}</span>
+          `;
+          if (addIncomeBtn) {
+            incomeContainer.insertBefore(btn, addIncomeBtn);
+          } else {
+            incomeContainer.appendChild(btn);
+          }
+        });
+      }
+
+      if (selectedCat) {
+        selectCategory(selectedCat);
+      }
+    }
+
+    function handleRemoveCategory(e, catName) {
+      if (e) e.stopPropagation();
+
+      showConfirmModal(
+        'Remove this category?',
+        `Are you sure you want to permanently remove <strong>${escapeHtml(catName)}</strong> from your categories?`,
+        () => {
+          removeCustomCategory(catName);
+          const currentCat = document.getElementById('tx-category').value;
+          const nextSelected = (currentCat && currentCat.toLowerCase() === catName.toLowerCase()) ? 'Food' : currentCat;
+          renderCustomCategories(nextSelected);
+          showToast(`Category "${catName}" removed`, 'info');
+        },
+        'Remove',
+        true
+      );
+    }
+
+    function handleRemoveIncomeCategory(e, catName) {
+      if (e) e.stopPropagation();
+
+      showConfirmModal(
+        'Remove this category?',
+        `Are you sure you want to permanently remove <strong>${escapeHtml(catName)}</strong> from your categories?`,
+        () => {
+          removeCustomIncomeCategory(catName);
+          const currentCat = document.getElementById('tx-category').value;
+          const nextSelected = (currentCat && currentCat.toLowerCase() === catName.toLowerCase()) ? 'Pocket Money' : currentCat;
+          renderCustomCategories(nextSelected);
+          showToast(`Category "${catName}" removed`, 'info');
+        },
+        'Remove',
+        true
+      );
+    }
+
+    function openAddCategoryModal() {
+      const modal = document.getElementById('add-category-modal');
+      const input = document.getElementById('new-category-input');
+      if (modal) {
+        modal.classList.add('active');
+        if (input) {
+          input.value = '';
+          setTimeout(() => input.focus(), 150);
+        }
+      }
+    }
+
+    function closeAddCategoryModal() {
+      const modal = document.getElementById('add-category-modal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    function handleCreateCategorySubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-category-input');
+      const catName = input.value.trim();
+
+      if (!catName) {
+        showToast('Please enter a category name', 'error');
+        input.focus();
+        return;
+      }
+
+      const result = currentMode === 'income' ? addCustomIncomeCategory(catName) : addCustomCategory(catName);
+      if (!result.success) {
+        showToast(result.message, 'error');
+        input.focus();
+        return;
+      }
+
+      closeAddCategoryModal();
+      renderCustomCategories(result.name);
+      showToast(`Category "${result.name}" added! 🎉`, 'success');
+    }
+
+    function switchTxType(type) {
+      currentMode = type;
+      document.getElementById('tx-type').value = type;
+
+      const btnExpense = document.getElementById('btn-type-expense');
+      const btnIncome = document.getElementById('btn-type-income');
+      const expenseCats = document.getElementById('expense-categories-grid');
+      const incomeCats = document.getElementById('income-categories-grid');
+      const submitBtn = document.getElementById('btn-save-tx');
+      const pageTitle = document.getElementById('page-title-text');
+
+      if (type === 'income') {
+        btnIncome.classList.add('active', 'income');
+        btnExpense.classList.remove('active', 'expense');
+        expenseCats.style.display = 'none';
+        incomeCats.style.display = 'grid';
+        submitBtn.className = 'btn btn-success btn-block btn-lg';
+        submitBtn.innerHTML = '💰 Save Income';
+        if (pageTitle) pageTitle.textContent = 'Add Pocket Money';
+        selectCategory('Pocket Money');
+      } else {
+        btnExpense.classList.add('active', 'expense');
+        btnIncome.classList.remove('active', 'income');
+        expenseCats.style.display = 'grid';
+        incomeCats.style.display = 'none';
+        submitBtn.className = 'btn btn-danger btn-block btn-lg';
+        submitBtn.innerHTML = '💸 Save Expense';
+        if (pageTitle) pageTitle.textContent = 'Record Expense';
+        selectCategory('Food');
+      }
+    }
+
+    function selectCategory(categoryName) {
+      document.getElementById('tx-category').value = categoryName;
+      const buttons = document.querySelectorAll('.category-chip-btn');
+      buttons.forEach(btn => {
+        if (btn.id === 'btn-add-category' || btn.id === 'btn-add-income-category') return;
+        if (btn.getAttribute('data-cat') === categoryName) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+    }
+
+    function addAmountValue(val) {
+      const amountInput = document.getElementById('tx-amount');
+      const current = parseFloat(amountInput.value) || 0;
+      amountInput.value = current + val;
+    }
+
+    function handleTransactionSubmit(e) {
+      e.preventDefault();
+
+      const amountInput = document.getElementById('tx-amount');
+      const amount = parseFloat(amountInput.value);
+      const type = document.getElementById('tx-type').value;
+      const category = document.getElementById('tx-category').value || (type === 'income' ? 'Pocket Money' : 'Food');
+      const descInput = document.getElementById('tx-desc');
+      const description = descInput.value.trim() || `${category} ${type === 'income' ? 'Income' : 'Expense'}`;
+      const date = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0];
+      const paymentMethod = document.getElementById('tx-payment-method').value || 'UPI';
+
+      if (!amount || isNaN(amount) || amount <= 0) {
+        showToast('Please enter a valid amount greater than 0', 'error');
+        amountInput.focus();
+        return;
+      }
+
+      if (type === 'expense') {
+        const { balance } = calculateBalance();
+        if (amount > balance) {
+          showConfirmModal(
+            '⚠️ Insufficient Balance Warning',
+            `This expense of <strong>${formatCurrency(amount)}</strong> exceeds your available balance of <strong>${formatCurrency(balance)}</strong>. Do you still wish to record it?`,
+            () => {
+              executeSaveTransaction({ type, amount, category, description, date, paymentMethod });
+            },
+            'Save Anyway',
+            true
+          );
+          return;
+        }
+      }
+
+      executeSaveTransaction({ type, amount, category, description, date, paymentMethod });
+    }
+
+    function executeSaveTransaction(txData) {
+      saveTransaction(txData);
+      showToast(`${txData.type === 'income' ? '+' : '-'}${formatCurrency(txData.amount)} saved! 🎉`, 'success');
+
+      const submitBtn = document.getElementById('btn-save-tx');
+      if (submitBtn) submitBtn.disabled = true;
+
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 700);
+    }
+  </script>
+</body>
+
+</html>

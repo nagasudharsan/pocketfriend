@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Savings Goals - Pocket Friend</title>
+  <meta name="description" content="Set and achieve student savings goals for headphones, gaming gear, laptops, and courses.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- PWA & Mobile Meta -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <img src="img/wallet.avif" alt="Pocket Friend Icon">
+        </div>
+        <div class="brand-title-group">
+          <span class="title">Pocket Friend</span>
+          <span class="tagline">Student Money Manager</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item" data-page="home">
+          <a href="dashboard.html"><span class="nav-icon">🏠</span> <span>Dashboard</span></a>
+        </li>
+        <li class="nav-item" data-page="transactions">
+          <a href="transactions.html"><span class="nav-icon">💳</span> <span>Transactions</span></a>
+        </li>
+        <li class="nav-item" data-page="add">
+          <a href="add-transaction.html"><span class="nav-icon">➕</span> <span>Add Transaction</span></a>
+        </li>
+        <li class="nav-item" data-page="budget">
+          <a href="budget.html"><span class="nav-icon">📊</span> <span>Monthly Budget</span></a>
+        </li>
+        <li class="nav-item active" data-page="savings">
+          <a href="savings.html"><span class="nav-icon">🎯</span> <span>Savings Goals</span></a>
+        </li>
+        <li class="nav-item" data-page="reports">
+          <a href="reports.html"><span class="nav-icon">📈</span> <span>Reports & Charts</span></a>
+        </li>
+        <li class="nav-item" data-page="profile">
+          <a href="profile.html"><span class="nav-icon">👤</span> <span>Profile & Settings</span></a>
+        </li>
+        <li class="nav-item" data-page="help">
+          <a href="help.html"><span class="nav-icon">❓</span> <span>Help & FAQ</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="user-avatar-circle">A</div>
+        <div class="user-info-text">
+          <div class="user-name user-name-display">Alex Sharma</div>
+          <div class="user-role">Student Account</div>
+        </div>
+        <button class="btn-logout" title="Log Out" style="font-size: 18px; color: var(--text-muted); padding: 4px;">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Viewport -->
+    <div class="main-viewport">
+
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-greeting">
+            <h2>Savings Goals 🎯</h2>
+            <p>Save pocket money towards dream gadgets, books, and courses.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button onclick="openGoalModal()" class="btn btn-primary btn-sm">+ New Goal</button>
+          <button class="header-icon-btn theme-toggle-btn" title="Toggle Theme">☀️</button>
+        </div>
+      </header>
+
+      <!-- Page Content Body -->
+      <main class="page-content-body">
+
+        <!-- Goals Overview Card -->
+        <div class="card" style="background: var(--hero-gradient); color: #fff; margin-bottom: 24px; padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85; font-weight: 700;">Total Saved Towards Goals</span>
+              <div id="goals-total-saved" style="font-size: 32px; font-weight: 900; letter-spacing: -0.5px; margin: 4px 0;">₹0</div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 12px; opacity: 0.85; display: block;">Combined Target</span>
+              <div id="goals-total-target" style="font-size: 22px; font-weight: 800;">₹0</div>
+              <span id="goals-completed-count" class="badge" style="background: rgba(255,255,255,0.25); color: #fff; margin-top: 6px;">0 of 0 Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Header -->
+        <div class="card-header" style="margin-bottom: 16px;">
+          <div>
+            <h2 class="card-title">Your Savings Targets</h2>
+            <span class="card-subtitle">Deposit money anytime into your goals</span>
+          </div>
+          <button onclick="openGoalModal()" class="btn btn-sm btn-outline">+ Create Goal</button>
+        </div>
+
+        <!-- Goals Cards Grid -->
+        <div id="goals-grid" class="budget-grid">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="goals-empty-state" class="empty-state card" style="display: none; margin-top: 16px;">
+          <div class="empty-icon">🎯</div>
+          <div class="empty-title">No savings targets set</div>
+          <div class="empty-desc">Create goals for new wireless headphones, gaming accessories, or college books!</div>
+          <button onclick="openGoalModal()" class="btn btn-sm btn-primary">+ Create First Goal</button>
+        </div>
+
+      </main>
+
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item" data-page="home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="transactions.html" class="nav-item" data-page="transactions">
+        <span class="nav-icon">💳</span>
+        <span class="nav-label">Transactions</span>
+      </a>
+      <a href="add-transaction.html" class="nav-item nav-item-add" data-page="add" title="Add Transaction">
+        <div class="nav-fab-btn">➕</div>
+        <span class="nav-label">Add</span>
+      </a>
+      <a href="budget.html" class="nav-item" data-page="budget">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Budget</span>
+      </a>
+      <a href="profile.html" class="nav-item" data-page="profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Create / Edit Goal Modal -->
+  <div id="goal-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="goal-modal-title">Create Savings Goal</h3>
+        <button class="modal-close-btn" id="goal-modal-close">&times;</button>
+      </div>
+
+      <form id="goal-form">
+        <div class="form-group">
+          <label for="goal-name" class="form-label">Goal Name *</label>
+          <input type="text" id="goal-name" class="form-control" placeholder="e.g. 🎧 Wireless Headphones" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="goal-target-amount" class="form-label">Target (₹) *</label>
+            <input type="number" id="goal-target-amount" class="form-control" placeholder="5000" min="1" step="any" required>
+          </div>
+          <div class="form-group">
+            <label for="goal-saved-amount" class="form-label">Initial Saved (₹)</label>
+            <input type="number" id="goal-saved-amount" class="form-control" placeholder="0" min="0" step="any">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="goal-target-date" class="form-label">Target Date (Optional)</label>
+          <input type="date" id="goal-target-date" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="goal-desc" class="form-label">Notes</label>
+          <input type="text" id="goal-desc" class="form-control" placeholder="Why you want this goal">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="goal-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Deposit Modal -->
+  <div id="deposit-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Deposit to Goal</h3>
+        <button class="modal-close-btn" id="deposit-modal-close">&times;</button>
+      </div>
+
+      <form id="deposit-form">
+        <p id="deposit-goal-name" style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 14px;"></p>
+
+        <div class="form-group">
+          <label for="deposit-amount" class="form-label">Amount to Add (₹) *</label>
+          <input type="number" id="deposit-amount" class="form-control" placeholder="500" min="1" step="any" required autofocus>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="deposit-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-success">Add to Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/savings.js"></script>
+</body>
+
+</html>

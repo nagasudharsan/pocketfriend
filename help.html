@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Help & FAQ - Pocket Friend</title>
+  <meta name="description" content="Frequently asked questions about Pocket Friend student pocket-money tracker and browser storage privacy.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- PWA & Mobile Meta -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <img src="img/wallet.avif" alt="Pocket Friend Icon">
+        </div>
+        <div class="brand-title-group">
+          <span class="title">Pocket Friend</span>
+          <span class="tagline">Student Money Manager</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item" data-page="home">
+          <a href="dashboard.html"><span class="nav-icon">🏠</span> <span>Dashboard</span></a>
+        </li>
+        <li class="nav-item" data-page="transactions">
+          <a href="transactions.html"><span class="nav-icon">💳</span> <span>Transactions</span></a>
+        </li>
+        <li class="nav-item" data-page="add">
+          <a href="add-transaction.html"><span class="nav-icon">➕</span> <span>Add Transaction</span></a>
+        </li>
+        <li class="nav-item" data-page="budget">
+          <a href="budget.html"><span class="nav-icon">📊</span> <span>Monthly Budget</span></a>
+        </li>
+        <li class="nav-item" data-page="savings">
+          <a href="savings.html"><span class="nav-icon">🎯</span> <span>Savings Goals</span></a>
+        </li>
+        <li class="nav-item" data-page="reports">
+          <a href="reports.html"><span class="nav-icon">📈</span> <span>Reports & Charts</span></a>
+        </li>
+        <li class="nav-item" data-page="profile">
+          <a href="profile.html"><span class="nav-icon">👤</span> <span>Profile & Settings</span></a>
+        </li>
+        <li class="nav-item active" data-page="help">
+          <a href="help.html"><span class="nav-icon">❓</span> <span>Help & FAQ</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="user-avatar-circle">A</div>
+        <div class="user-info-text">
+          <div class="user-name user-name-display">Alex Sharma</div>
+          <div class="user-role">Student Account</div>
+        </div>
+        <button class="btn-logout" title="Log Out" style="font-size: 18px; color: var(--text-muted); padding: 4px;">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Viewport -->
+    <div class="main-viewport">
+
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-greeting">
+            <h2>Help & Support ❓</h2>
+            <p>Answers to common questions and student money management tips.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="header-icon-btn theme-toggle-btn" title="Toggle Theme">☀️</button>
+        </div>
+      </header>
+
+      <!-- Page Content Body -->
+      <main class="page-content-body">
+
+        <div class="dashboard-grid">
+
+          <!-- FAQ Accordion -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Frequently Asked Questions</h3>
+                <span class="card-subtitle">Learn how to make the most of Pocket Friend</span>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+
+              <div class="card" style="margin-bottom: 0; background: var(--bg-surface); padding: 18px;">
+                <h4 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">👛 What is Pocket Friend?</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                  Pocket Friend is a student pocket-money manager designed for phones, tablets, laptops, and desktop computers. It lets you record allowances from parents, track daily canteen food and travel expenses, set monthly category budgets, and save up for your goals.
+                </p>
+              </div>
+
+              <div class="card" style="margin-bottom: 0; background: var(--bg-surface); padding: 18px;">
+                <h4 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">💰 How do I add pocket money?</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                  Click "+ Add Transaction" in the sidebar (or tap the center ➕ button on mobile), choose <strong>Add Pocket Money</strong>, enter the amount, select the source (Allowance, Parents, Gift, Scholarship), and save!
+                </p>
+              </div>
+
+              <div class="card" style="margin-bottom: 0; background: var(--bg-surface); padding: 18px;">
+                <h4 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">🔒 Is my student data safe & private?</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                  Yes! All records are stored securely in your browser's private isolated storage. No bank account access, PINs, or passwords to real financial services are ever requested, ensuring complete privacy.
+                </p>
+              </div>
+
+              <div class="card" style="margin-bottom: 0; background: var(--bg-surface); padding: 18px;">
+                <h4 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">📲 How do I install this as an App on Android or PC?</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+                  Pocket Friend is an installable Progressive Web App (PWA). In Chrome or Edge, click the Install App button in the address bar (or "Add to Home screen" in mobile browser menu) to run it as a standalone app!
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Send Feedback Form -->
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">📬 Send Student Feedback</h3>
+                  <span class="card-subtitle">Have a suggestion or need help?</span>
+                </div>
+              </div>
+
+              <form id="contact-feedback-form">
+                <div class="form-group">
+                  <label class="form-label">Your Name</label>
+                  <input type="text" class="form-control" placeholder="Alex Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-control" placeholder="student@college.edu" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Feedback / Question</label>
+                  <textarea class="form-control" style="height: 110px; padding: 12px 16px;" placeholder="Tell us what features you'd like to see next in Pocket Friend..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                  🚀 Send Message
+                </button>
+              </form>
+            </div>
+
+            <!-- Version & Offline Badge Card -->
+            <div class="card" style="text-align: center; padding: 18px;">
+              <span class="version-badge">Pocket Friend v1.0.0</span>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                Built with Pure HTML, CSS, and Vanilla JavaScript • Offline Capable PWA
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item" data-page="home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="transactions.html" class="nav-item" data-page="transactions">
+        <span class="nav-icon">💳</span>
+        <span class="nav-label">Transactions</span>
+      </a>
+      <a href="add-transaction.html" class="nav-item nav-item-add" data-page="add" title="Add Transaction">
+        <div class="nav-fab-btn">➕</div>
+        <span class="nav-label">Add</span>
+      </a>
+      <a href="budget.html" class="nav-item" data-page="budget">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Budget</span>
+      </a>
+      <a href="profile.html" class="nav-item" data-page="profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setupLayout('help');
+
+      const contactForm = document.getElementById('contact-feedback-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          showToast('Thank you for your feedback! 💌', 'success');
+          contactForm.reset();
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

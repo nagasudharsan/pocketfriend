@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Reports & Analytics - Pocket Friend</title>
+  <meta name="description" content="Visual financial analytics and student spending trends without complex spreadsheets.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- PWA & Mobile Meta -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <img src="img/wallet.avif" alt="Pocket Friend Icon">
+        </div>
+        <div class="brand-title-group">
+          <span class="title">Pocket Friend</span>
+          <span class="tagline">Student Money Manager</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item" data-page="home">
+          <a href="dashboard.html"><span class="nav-icon">🏠</span> <span>Dashboard</span></a>
+        </li>
+        <li class="nav-item" data-page="transactions">
+          <a href="transactions.html"><span class="nav-icon">💳</span> <span>Transactions</span></a>
+        </li>
+        <li class="nav-item" data-page="add">
+          <a href="add-transaction.html"><span class="nav-icon">➕</span> <span>Add Transaction</span></a>
+        </li>
+        <li class="nav-item" data-page="budget">
+          <a href="budget.html"><span class="nav-icon">📊</span> <span>Monthly Budget</span></a>
+        </li>
+        <li class="nav-item" data-page="savings">
+          <a href="savings.html"><span class="nav-icon">🎯</span> <span>Savings Goals</span></a>
+        </li>
+        <li class="nav-item active" data-page="reports">
+          <a href="reports.html"><span class="nav-icon">📈</span> <span>Reports & Charts</span></a>
+        </li>
+        <li class="nav-item" data-page="profile">
+          <a href="profile.html"><span class="nav-icon">👤</span> <span>Profile & Settings</span></a>
+        </li>
+        <li class="nav-item" data-page="help">
+          <a href="help.html"><span class="nav-icon">❓</span> <span>Help & FAQ</span></a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="user-avatar-circle">A</div>
+        <div class="user-info-text">
+          <div class="user-name user-name-display">Alex Sharma</div>
+          <div class="user-role">Student Account</div>
+        </div>
+        <button class="btn-logout" title="Log Out" style="font-size: 18px; color: var(--text-muted); padding: 4px;">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Viewport -->
+    <div class="main-viewport">
+
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-greeting">
+            <h2>Analytics & Visual Reports 📈</h2>
+            <p>Understand your spending habits and financial patterns.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <select id="report-timeframe" class="form-control" style="width: auto; height: 38px; font-weight: 700;">
+              <option value="this_month" selected>📅 This Month</option>
+              <option value="this_week">📅 This Week</option>
+              <option value="last_month">📅 Last Month</option>
+              <option value="this_year">📅 This Year</option>
+              <option value="all">📅 All Time</option>
+            </select>
+          </div>
+          <button class="header-icon-btn theme-toggle-btn" title="Toggle Theme">☀️</button>
+        </div>
+      </header>
+
+      <!-- Page Content Body -->
+      <main class="page-content-body">
+
+        <!-- 4 Metrics Grid -->
+        <section class="stats-grid">
+          <div class="stat-card income">
+            <div class="stat-icon-bubble">📥</div>
+            <div class="stat-info">
+              <span class="stat-label">Total Income</span>
+              <span class="stat-value" id="report-total-income">₹0</span>
+            </div>
+          </div>
+
+          <div class="stat-card expense">
+            <div class="stat-icon-bubble">📤</div>
+            <div class="stat-info">
+              <span class="stat-label">Total Spent</span>
+              <span class="stat-value" id="report-total-expenses">₹0</span>
+            </div>
+          </div>
+
+          <div class="stat-card balance">
+            <div class="stat-icon-bubble">💰</div>
+            <div class="stat-info">
+              <span class="stat-label">Net Savings</span>
+              <span class="stat-value" id="report-net-savings">₹0</span>
+            </div>
+          </div>
+
+          <div class="stat-card budget">
+            <div class="stat-icon-bubble">📅</div>
+            <div class="stat-info">
+              <span class="stat-label">Daily Average</span>
+              <span class="stat-value" id="report-avg-daily">₹0</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2-Column Analytics Charts Grid -->
+        <div class="dashboard-grid">
+
+          <!-- Category Donut Chart -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">🍩 Spending Breakdown</h3>
+                <span class="card-subtitle">Expenses categorized by type</span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="reportCategoryChart"></canvas>
+              <div id="report-category-legend" class="chart-legend"></div>
+            </div>
+          </div>
+
+          <!-- Income vs Expense Bar Chart -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">⚖️ Income vs Expenses</h3>
+                <span class="card-subtitle">Comparison for selected timeframe</span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="reportIncomeExpenseChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 6-Month Trend Chart Card -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">📊 6-Month Spending Trend</h3>
+              <span class="card-subtitle">Track your month-on-month pocket money spending</span>
+            </div>
+          </div>
+          <div class="chart-container" style="min-height: 240px;">
+            <canvas id="reportMonthlyTrendChart"></canvas>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item" data-page="home">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="transactions.html" class="nav-item" data-page="transactions">
+        <span class="nav-icon">💳</span>
+        <span class="nav-label">Transactions</span>
+      </a>
+      <a href="add-transaction.html" class="nav-item nav-item-add" data-page="add" title="Add Transaction">
+        <div class="nav-fab-btn">➕</div>
+        <span class="nav-label">Add</span>
+      </a>
+      <a href="budget.html" class="nav-item" data-page="budget">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Budget</span>
+      </a>
+      <a href="profile.html" class="nav-item" data-page="profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+
+</html>

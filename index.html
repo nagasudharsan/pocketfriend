@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Pocket Friend - Your Smart Pocket Money Companion</title>
+  <meta name="description" content="Manage pocket money, control student spending, set savings goals, and build healthy financial habits with Pocket Friend.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- PWA & Mobile Meta -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+
+<body style="background: var(--bg-body);">
+
+  <!-- Startup Splash Screen -->
+  <div id="app-splash-screen">
+    <div class="splash-content">
+      <div class="splash-icon-wrapper">
+        <img src="img/wallet.avif" alt="Pocket Friend Logo">
+      </div>
+      <h1 class="splash-app-name">Pocket Friend</h1>
+      <p class="splash-tagline">Your Smart Pocket Money Companion</p>
+      <div class="splash-loader-bar">
+        <div class="splash-loader-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Responsive Landing Page Header -->
+  <header style="background: var(--bg-surface-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 100;">
+    <div style="max-width: var(--max-content-width); margin: 0 auto; padding: 0 24px; height: 70px; display: flex; align-items: center; justify-content: space-between;">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" style="display: flex; align-items: center; gap: 12px;">
+        <div class="brand-icon-box">
+          <img src="img/wallet.avif" alt="Pocket Friend Icon">
+        </div>
+        <div>
+          <span style="font-size: 18px; font-weight: 900; color: var(--text-main); letter-spacing: -0.3px; display: block; line-height: 1.1;">Pocket Friend</span>
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Student Money Manager</span>
+        </div>
+      </a>
+
+      <!-- Actions -->
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="header-icon-btn theme-toggle-btn" title="Toggle Theme">☀️</button>
+        <a href="login.html" class="btn btn-secondary btn-sm">🔐 Student Login</a>
+        <a href="signup.html" class="btn btn-primary btn-sm desktop-only">🚀 Create Free Account</a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Responsive Landing Body -->
+  <main style="max-width: var(--max-content-width); margin: 0 auto; padding: 40px 24px 80px 24px;">
+
+    <!-- Hero Card Banner -->
+    <div class="card" style="background: var(--hero-gradient); color: #ffffff; padding: 48px 32px; border-radius: var(--radius-xl); text-align: center; margin-bottom: 40px; box-shadow: var(--shadow-lg);">
+      <span class="badge" style="background: rgba(255,255,255,0.2); color: #ffffff; font-size: 12px; margin-bottom: 16px; padding: 6px 14px;">
+        🎓 Crafted Specially for Students & College Life
+      </span>
+      <h1 style="font-size: clamp(28px, 5vw, 46px); font-weight: 900; letter-spacing: -1px; line-height: 1.15; max-width: 800px; margin: 0 auto 16px auto;">
+        Master your pocket money with zero stress.
+      </h1>
+      <p style="font-size: clamp(14px, 2vw, 17px); opacity: 0.9; max-width: 620px; margin: 0 auto 28px auto; line-height: 1.6;">
+        Track allowances from parents, monitor daily canteen expenses, stick to category budgets, and hit savings goals with 100% offline privacy.
+      </p>
+
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; max-width: 520px; margin: 0 auto;">
+        <a href="signup.html" class="btn btn-primary btn-lg" style="background: #ffffff; color: #4f46e5; box-shadow: 0 10px 25px rgba(0,0,0,0.25);">
+          🚀 Get Started Free
+        </a>
+        <a href="login.html" class="btn btn-outline btn-lg" style="border-color: rgba(255,255,255,0.3); color: #ffffff;">
+          🔐 Student Login
+        </a>
+        <button id="hero-demo-btn" class="btn btn-success btn-lg" style="box-shadow: 0 10px 25px rgba(16,185,129,0.35);">
+          ⚡ 1-Click Live Demo
+        </button>
+      </div>
+    </div>
+
+    <!-- Section Title -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <h2 style="font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">✨ What Makes Pocket Friend Special</h2>
+      <p style="font-size: 14px; color: var(--text-muted); margin-top: 4px;">Smart money management made simple for college students</p>
+    </div>
+
+    <!-- 4-Card Responsive Grid -->
+    <div class="stats-grid" style="margin-bottom: 40px;">
+      
+      <div class="card" style="padding: 24px; margin-bottom: 0;">
+        <div class="stat-icon-bubble" style="background: var(--success-bg); color: var(--success); margin-bottom: 16px;">💰</div>
+        <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Pocket Money Tracker</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">Log allowances, festival gifts, and part-time stipends in seconds.</p>
+      </div>
+
+      <div class="card" style="padding: 24px; margin-bottom: 0;">
+        <div class="stat-icon-bubble" style="background: var(--danger-bg); color: var(--danger); margin-bottom: 16px;">💸</div>
+        <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Daily Canteen Spending</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">Quick tags for food, metro travel, books, shopping, and mobile recharges.</p>
+      </div>
+
+      <div class="card" style="padding: 24px; margin-bottom: 0;">
+        <div class="stat-icon-bubble" style="background: rgba(99,102,241,0.15); color: var(--primary); margin-bottom: 16px;">📊</div>
+        <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Monthly Budgets</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">Visual progress bars & warning alerts keep you from running out of cash.</p>
+      </div>
+
+      <div class="card" style="padding: 24px; margin-bottom: 0;">
+        <div class="stat-icon-bubble" style="background: var(--warning-bg); color: var(--warning); margin-bottom: 16px;">🎯</div>
+        <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Savings Goals</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">Save up for wireless headphones, games, college textbooks, or laptops.</p>
+      </div>
+
+    </div>
+
+    <!-- Responsive Multi-Device Showcase -->
+    <div class="card" style="padding: 32px; text-align: center; background: var(--bg-surface);">
+      <h3 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">📱 Works Everywhere Seamlessly</h3>
+      <p style="font-size: 14px; color: var(--text-muted); max-width: 600px; margin: 0 auto 20px auto;">
+        Install as a native standalone app on Android phones, iPhones, tablets, laptops, and desktop computers with offline sync.
+      </p>
+      <span class="version-badge">Pocket Friend v1.0.0</span>
+    </div>
+
+    <!-- Footer -->
+    <footer style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-light);">
+      <p style="font-size: 12.5px; color: var(--text-muted);">
+        © 2026 Pocket Friend • Offline Capable Progressive Web App (PWA)
+      </p>
+    </footer>
+
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      registerServiceWorker();
+
+      // Check if logged in already -> auto redirect to dashboard after brief splash
+      const currentUser = getCurrentUser();
+      if (currentUser) {
+        initSplashScreen(true);
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1200);
+        return;
+      } else {
+        initSplashScreen(false);
+      }
+
+      // 1-Click Demo Action
+      const demoBtn = document.getElementById('hero-demo-btn');
+      if (demoBtn) {
+        demoBtn.addEventListener('click', () => {
+          const demoUser = initDemoData(false);
+          setCurrentUser(demoUser);
+          showToast('Welcome to Pocket Friend Demo! 🚀', 'success');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 500);
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

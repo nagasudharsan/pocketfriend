@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pocket Friend - User Data Isolation Test Suite</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Favicon & App Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="img/favicon-48x48.png">
+  <link rel="icon" type="image/avif" href="img/wallet.avif">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <style>
+    body {
+      background: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      padding: 40px 20px;
+    }
+
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--bg-surface);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-light);
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .test-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .test-row:last-child {
+      border-bottom: none;
+    }
+
+    .badge-pass {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 99px;
+    }
+
+    .badge-fail {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 99px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="test-container">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+      <div class="brand-icon">🧪</div>
+      <div>
+        <h2 style="font-size: 22px; font-weight: 800;">Pocket Friend Data Isolation Verification</h2>
+        <p style="color: var(--text-secondary); font-size: 14px;">Automated runtime test of multi-user separation &
+          fresh account zero-balances.</p>
+      </div>
+    </div>
+
+    <div id="test-results">
+      <!-- Test steps dynamically populated -->
+    </div>
+
+    <div style="margin-top: 24px; text-align: center;">
+      <a href="signup.html" class="btn btn-primary">Go to Signup</a>
+      <a href="login.html" class="btn btn-secondary" style="margin-left: 10px;">Go to Login</a>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    const resultsContainer = document.getElementById('test-results');
+
+    function logTest(name, passed, details = '') {
+      const row = document.createElement('div');
+      row.className = 'test-row';
+      row.innerHTML = `
+        <div>
+          <strong style="font-size: 15px;">${name}</strong>
+          ${details ? `<div style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">${details}</div>` : ''}
+        </div>
+        <span class="${passed ? 'badge-pass' : 'badge-fail'}">${passed ? 'PASSED' : 'FAILED'}</span>
+      `;
+      resultsContainer.appendChild(row);
+    }
+
+    try {
+      // 1. Cleanup Legacy Keys
+      cleanupLegacyGlobalData();
+      logTest('1. Legacy Global Keys Cleanup',
+        !localStorage.getItem('pocketfriend_transactions') && !localStorage.getItem('pocketpal_transactions') && !localStorage.getItem('transactions'),
+        'Removed legacy shared transactions, budgets, and settings keys.'
+      );
+
+      // 2. User A Signup
+      const userAId = 'usr_test_A_' + Date.now();
+      const userA = { id: userAId, name: 'User A', email: 'a@test.com', password: 'password123', createdAt: new Date().toISOString() };
+      saveUser(userA);
+      initNewUserData(userAId);
+      setCurrentUser(userA);
+
+      const balA0 = calculateBalance();
+      const txsA0 = getTransactions();
+      const bdgsA0 = getBudgets();
+      const goalsA0 = getGoals();
+
+      logTest('2. User A New Account Zero State',
+        balA0.balance === 0 && balA0.totalIncome === 0 && balA0.totalExpenses === 0 && txsA0.length === 0 && bdgsA0.length === 0 && goalsA0.length === 0,
+        `Balance: ₹${balA0.balance}, Income: ₹${balA0.totalIncome}, Expenses: ₹${balA0.totalExpenses}, Tx: ${txsA0.length}, Budgets: ${bdgsA0.length}, Goals: ${goalsA0.length}`
+      );
+
+      // 3. User A Adds Records
+      saveTransaction({ type: 'income', amount: 5000, category: 'Pocket Money', description: 'Pocket Money' });
+      saveTransaction({ type: 'expense', amount: 500, category: 'Food', description: 'Food Expense' });
+      saveBudget({ category: 'Food', amount: 1500 });
+      saveGoal({ name: 'Emergency Fund', targetAmount: 10000, savedAmount: 0 });
+
+      const balA1 = calculateBalance();
+      logTest('3. User A Financial Records Added',
+        balA1.balance === 4500 && balA1.totalIncome === 5000 && balA1.totalExpenses === 500 && getTransactions().length === 2 && getBudgets().length === 1 && getGoals().length === 1,
+        `Balance: ₹${balA1.balance}, Income: ₹${balA1.totalIncome}, Expenses: ₹${balA1.totalExpenses}`
+      );
+
+      // 4. Logout User A
+      setCurrentUser(null);
+      logTest('4. User A Logout Session Cleared', getCurrentUser() === null, 'Current user session removed without erasing storage.');
+
+      // 5. User B Signup & Isolation Verification
+      const userBId = 'usr_test_B_' + Date.now();
+      const userB = { id: userBId, name: 'User B', email: 'b@test.com', password: 'password123', createdAt: new Date().toISOString() };
+      saveUser(userB);
+      initNewUserData(userBId);
+      setCurrentUser(userB);
+
+      const balB0 = calculateBalance();
+      const txsB0 = getTransactions();
+      const bdgsB0 = getBudgets();
+      const goalsB0 = getGoals();
+
+      const userBIsolated = balB0.balance === 0 && balB0.totalIncome === 0 && balB0.totalExpenses === 0 && txsB0.length === 0 && bdgsB0.length === 0 && goalsB0.length === 0;
+
+      logTest('5. User B Strict Isolation Check (Zero Leakage from User A)',
+        userBIsolated,
+        `User B initial state: Balance: ₹${balB0.balance}, Income: ₹${balB0.totalIncome}, Expenses: ₹${balB0.totalExpenses}, Tx: ${txsB0.length}, Budgets: ${bdgsB0.length}, Goals: ${goalsB0.length}`
+      );
+
+      // 6. User B Adds Records
+      saveTransaction({ type: 'income', amount: 2000, category: 'Parents', description: 'Allowance' });
+      saveTransaction({ type: 'expense', amount: 200, category: 'Transport', description: 'Bus Fare' });
+
+      const balB1 = calculateBalance();
+      logTest('6. User B Financial Records Added',
+        balB1.balance === 1800 && balB1.totalIncome === 2000 && balB1.totalExpenses === 200 && getTransactions().length === 2,
+        `Balance: ₹${balB1.balance}, Income: ₹${balB1.totalIncome}, Expenses: ₹${balB1.totalExpenses}`
+      );
+
+      // 7. Logout User B and Re-login User A
+      setCurrentUser(null);
+      setCurrentUser(userA);
+
+      const balA2 = calculateBalance();
+      const txsA2 = getTransactions();
+      const bdgsA2 = getBudgets();
+      const goalsA2 = getGoals();
+
+      const hasContamination = txsA2.some(t => t.amount === 2000 || t.amount === 200);
+
+      logTest('7. User A Re-login & Data Preservation',
+        balA2.balance === 4500 && balA2.totalIncome === 5000 && balA2.totalExpenses === 500 && txsA2.length === 2 && bdgsA2.length === 1 && goalsA2.length === 1 && !hasContamination,
+        `User A restored: Balance ₹${balA2.balance}, Income: ₹${balA2.totalIncome}, Expenses: ₹${balA2.totalExpenses}, Budgets: ${bdgsA2.length}, Goals: ${goalsA2.length}. User B data is absent.`
+      );
+
+    } catch (err) {
+      logTest('Runtime Error', false, err.message);
+    }
+  </script>
+</body>
+
+</html>

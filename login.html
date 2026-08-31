@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Login - Pocket Friend</title>
+  <meta name="description" content="Log in to your Pocket Friend student pocket-money account.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- PWA & Favicon Meta -->
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
+
+  <div style="width: 100%; max-width: 440px; margin: 0 auto;">
+
+    <!-- Top Branding -->
+    <div style="text-align: center; margin-bottom: 24px;">
+      <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <div class="brand-icon-box" style="width: 48px; height: 48px;">
+          <img src="img/wallet.avif" alt="Pocket Friend Logo" style="width: 30px; height: 30px;">
+        </div>
+      </a>
+      <h1 style="font-size: 24px; font-weight: 900; color: var(--text-main); letter-spacing: -0.5px;">Welcome Back</h1>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">Log in to manage your student pocket money</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="card" style="padding: 32px 28px; box-shadow: var(--shadow-lg);">
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="login-email" class="form-label">Email Address</label>
+          <input type="email" id="login-email" class="form-control" placeholder="demo@pocketfriend.com" required autofocus>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label for="login-password" class="form-label" style="margin-bottom: 0;">Password</label>
+            <a href="#" id="forgot-password-link" style="font-size: 12px; color: var(--primary); font-weight: 600;">Forgot password?</a>
+          </div>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+            <input type="checkbox" id="remember-me" style="accent-color: var(--primary); width: 16px; height: 16px;">
+            Remember my email
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="height: 50px;">
+          🔐 Log In to Account
+        </button>
+      </form>
+
+      <div style="position: relative; text-align: center; margin: 24px 0 18px 0;">
+        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-light); z-index: 1;"></div>
+        <span style="position: relative; background: var(--bg-card); padding: 0 12px; font-size: 11px; color: var(--text-muted); font-weight: 700; z-index: 2;">OR TRY QUICK DEMO</span>
+      </div>
+
+      <button id="btn-quick-demo" class="btn btn-success btn-block" style="height: 46px; font-size: 14px;">
+        ⚡ 1-Click Live Demo Account
+      </button>
+    </div>
+
+    <!-- Demo Account Tip -->
+    <div class="card" style="background: rgba(99, 102, 241, 0.08); border-color: rgba(99, 102, 241, 0.2); padding: 14px; text-align: center; margin-top: 16px;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 2px;">Demo Student Credentials</div>
+      <div style="font-size: 12px; color: var(--text-secondary);">
+        Email: <strong>demo@pocketfriend.com</strong> • Password: <strong>demo123</strong>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 13.5px; color: var(--text-secondary);">
+      New to Pocket Friend? <a href="signup.html" style="color: var(--primary); font-weight: 700;">Create Free Account</a>
+    </div>
+
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+
+</html>
