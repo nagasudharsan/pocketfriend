@@ -1,7 +1,7 @@
 /**
  * Pocket Friend - Dashboard Controller
  * Pure Vanilla JavaScript & Custom HTML5 Canvas Chart Engine
- * Fully Responsive Desktop + Mobile Architecture
+ * Connected to Node.js/Express Backend & MySQL Database
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,13 +25,37 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function loadDashboardData() {
-  const transactions = getTransactions();
+async function loadDashboardData() {
   const goals = getGoals();
   const budgets = getBudgets();
-  const { totalIncome, totalExpenses, balance } = calculateBalance();
 
-  // Update Summary Stats Cards
+  let totalIncome = 0;
+  let totalExpenses = 0;
+  let balance = 0;
+  let recentTx = [];
+  let categoryBreakdown = [];
+
+  // 1. Fetch Server-side Computed Aggregates from MySQL Backend
+  const summaryRes = await DashboardAPI.getSummary();
+
+  if (summaryRes.success && summaryRes.data) {
+    const d = summaryRes.data;
+    totalIncome = Number(d.totalIncome) || 0;
+    totalExpenses = Number(d.totalExpenses) || 0;
+    balance = Number(d.balance) || 0;
+    recentTx = d.recentTransactions || [];
+    categoryBreakdown = d.categorySpending || [];
+  } else {
+    // Client-side fallback if backend server is not reachable
+    const localTx = getTransactions();
+    const localTotals = calculateBalance();
+    totalIncome = localTotals.totalIncome;
+    totalExpenses = localTotals.totalExpenses;
+    balance = localTotals.balance;
+    recentTx = localTx.slice(0, 6);
+  }
+
+  // 2. Update Summary Stats Cards
   const totalBalanceEl = document.getElementById('stat-balance');
   const totalIncomeEl = document.getElementById('stat-income');
   const totalExpensesEl = document.getElementById('stat-expense');
@@ -44,20 +68,21 @@ function loadDashboardData() {
   if (budgetUsedEl) {
     let totalBudget = 0;
     budgets.forEach(b => totalBudget += Number(b.amount) || 0);
-    if (totalBudget > 0) {
-      budgetUsedEl.textContent = `${formatCurrency(totalBudget)}`;
-    } else {
-      budgetUsedEl.textContent = `₹0`;
-    }
+    budgetUsedEl.textContent = totalBudget > 0 ? `${formatCurrency(totalBudget)}` : `₹0`;
   }
 
-  // Render Recent Transactions (Top 6)
-  renderRecentTransactions(transactions.slice(0, 6));
+  // 3. Render Recent Transactions (Top 6)
+  renderRecentTransactions(recentTx);
 
-  // Render Canvas Spending Chart
-  renderSpendingChart(transactions);
+  // 4. Render Canvas Spending Chart
+  if (categoryBreakdown && categoryBreakdown.length > 0) {
+    renderSpendingChartFromBreakdown(categoryBreakdown);
+  } else {
+    const transactions = (recentTx && recentTx.length > 0) ? recentTx : getTransactions();
+    renderSpendingChart(transactions);
+  }
 
-  // Render Savings Goals Preview
+  // 5. Render Savings Goals Preview
   renderDashboardGoals(goals);
 }
 
@@ -65,7 +90,7 @@ function renderRecentTransactions(recentTx) {
   const container = document.getElementById('recent-transactions-list');
   if (!container) return;
 
-  if (recentTx.length === 0) {
+  if (!recentTx || recentTx.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">💸</div>
@@ -112,6 +137,44 @@ function renderRecentTransactions(recentTx) {
   }).join('');
 }
 
+function renderSpendingChartFromBreakdown(categoryBreakdown) {
+  const canvas = document.getElementById('spendingChart');
+  const legendContainer = document.getElementById('chart-legend');
+  const emptyChartMsg = document.getElementById('chart-empty-state');
+  if (!canvas) return;
+
+  let totalExpenseAmount = 0;
+  categoryBreakdown.forEach(c => totalExpenseAmount += Number(c.amount) || 0);
+
+  if (categoryBreakdown.length === 0 || totalExpenseAmount === 0) {
+    canvas.style.display = 'none';
+    if (legendContainer) legendContainer.innerHTML = '';
+    if (emptyChartMsg) emptyChartMsg.style.display = 'block';
+    return;
+  }
+
+  canvas.style.display = 'block';
+  if (emptyChartMsg) emptyChartMsg.style.display = 'none';
+
+  const categories = categoryBreakdown.map(c => c.category);
+  const data = categoryBreakdown.map(c => c.amount);
+  const colors = categories.map(cat => getCategoryMeta(cat).color);
+
+  drawDonutChart(canvas, data, colors, categories, totalExpenseAmount);
+
+  if (legendContainer) {
+    legendContainer.innerHTML = categoryBreakdown.map((item, i) => {
+      const percentage = Math.round((item.amount / totalExpenseAmount) * 100);
+      return `
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: ${colors[i]};"></div>
+          <span><strong>${escapeHtml(item.category)}</strong>: ${formatCurrency(item.amount)} (${percentage}%)</span>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
 function renderSpendingChart(transactions) {
   const canvas = document.getElementById('spendingChart');
   const legendContainer = document.getElementById('chart-legend');
@@ -146,17 +209,15 @@ function renderSpendingChart(transactions) {
   const data = categories.map(cat => categoryTotals[cat]);
   const colors = categories.map(cat => getCategoryMeta(cat).color);
 
-  // Draw Custom HTML5 Canvas Doughnut Chart
   drawDonutChart(canvas, data, colors, categories, totalExpenseAmount);
 
-  // Render Legend
   if (legendContainer) {
     legendContainer.innerHTML = categories.map((cat, i) => {
       const percentage = Math.round((categoryTotals[cat] / totalExpenseAmount) * 100);
       return `
         <div class="legend-item">
           <div class="legend-color" style="background-color: ${colors[i]};"></div>
-          <span><strong>${cat}</strong>: ${formatCurrency(categoryTotals[cat])} (${percentage}%)</span>
+          <span><strong>${escapeHtml(cat)}</strong>: ${formatCurrency(categoryTotals[cat])} (${percentage}%)</span>
         </div>
       `;
     }).join('');
@@ -192,7 +253,6 @@ function drawDonutChart(canvas, data, colors, labels, total) {
     startAngle = endAngle;
   }
 
-  // Center text
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light' && !document.body.classList.contains('light-mode');
   
   ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
@@ -210,7 +270,7 @@ function renderDashboardGoals(goals) {
   const container = document.getElementById('dashboard-goals-list');
   if (!container) return;
 
-  if (goals.length === 0) {
+  if (!goals || goals.length === 0) {
     container.innerHTML = `
       <div class="empty-state" style="padding: 14px 0;">
         <div class="empty-icon" style="font-size: 30px;">🎯</div>

@@ -1,6 +1,6 @@
 /**
  * Pocket Friend - Add Money & Add Expense Handlers
- * Pure Vanilla JavaScript
+ * Connected to Node.js / Express REST API & MySQL Database
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- ADD MONEY FORM ---
   const addMoneyForm = document.getElementById('add-money-form');
   if (addMoneyForm) {
-    addMoneyForm.addEventListener('submit', (e) => {
+    addMoneyForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const amountInput = document.getElementById('income-amount');
@@ -60,23 +60,28 @@ document.addEventListener('DOMContentLoaded', () => {
         paymentMethod: 'UPI / Cash'
       };
 
-      saveTransaction(newTx);
-      showToast(`+${formatCurrency(amount)} added successfully! 🎉`, 'success');
-
-      // Disable button to prevent double submit
       const submitBtn = addMoneyForm.querySelector('button[type="submit"]');
       if (submitBtn) submitBtn.disabled = true;
 
+      // Submit to Backend API
+      const apiRes = await TransactionsAPI.create(newTx);
+      if (apiRes.success) {
+        showToast(apiRes.message || `+${formatCurrency(amount)} added in MySQL! 🎉`, 'success');
+      } else {
+        saveTransaction(newTx);
+        showToast(`+${formatCurrency(amount)} added successfully! 🎉`, 'success');
+      }
+
       setTimeout(() => {
         window.location.href = 'dashboard.html';
-      }, 900);
+      }, 700);
     });
   }
 
   // --- ADD EXPENSE FORM ---
   const addExpenseForm = document.getElementById('add-expense-form');
   if (addExpenseForm) {
-    addExpenseForm.addEventListener('submit', (e) => {
+    addExpenseForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const amountInput = document.getElementById('expense-amount');
@@ -111,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { balance } = calculateBalance();
 
       // Overdraft / low balance check
-      if (amount > balance) {
+      if (amount > balance && balance > 0) {
         showConfirmModal(
           '⚠️ Insufficient Balance Warning',
           `This expense of <strong>${formatCurrency(amount)}</strong> exceeds your current available balance of <strong>${formatCurrency(balance)}</strong>. Do you still wish to record this expense?`,
@@ -131,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      executeSaveExpense({
+      await executeSaveExpense({
         type: 'expense',
         amount,
         category,
@@ -142,15 +147,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function executeSaveExpense(txData) {
-    saveTransaction(txData);
-    showToast(`-${formatCurrency(txData.amount)} recorded for ${txData.category}! 💸`, 'success');
-
+  async function executeSaveExpense(txData) {
     const submitBtn = document.querySelector('#add-expense-form button[type="submit"]');
     if (submitBtn) submitBtn.disabled = true;
 
+    // Submit to Backend API
+    const apiRes = await TransactionsAPI.create(txData);
+    if (apiRes.success) {
+      showToast(apiRes.message || `-${formatCurrency(txData.amount)} recorded in MySQL! 💸`, 'success');
+    } else {
+      saveTransaction(txData);
+      showToast(`-${formatCurrency(txData.amount)} recorded for ${txData.category}! 💸`, 'success');
+    }
+
     setTimeout(() => {
       window.location.href = 'dashboard.html';
-    }, 900);
+    }, 700);
   }
 });

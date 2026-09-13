@@ -437,6 +437,230 @@ body:not(.light-mode) .sidebar-menu .nav-item.active a {
   background: var(--bg-active);
 }
 
+/* ==========================================================================
+   LANDING PAGE HEADER (Responsive Mobile & Desktop)
+   ========================================================================== */
+.landing-header {
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+.landing-header-container {
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.landing-brand .brand-icon-box {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.landing-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.landing-brand-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.landing-brand-tagline {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.landing-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.landing-header-actions .header-icon-btn {
+  flex-shrink: 0;
+}
+
+.landing-header-actions .btn-sm {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Mobile Breakpoints for Landing Header */
+@media (max-width: 767px) {
+  .landing-header-container {
+    padding: 0 16px;
+    height: 62px;
+    gap: 10px;
+  }
+
+  .landing-brand {
+    gap: 10px;
+  }
+
+  .landing-brand .brand-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+  }
+
+  .landing-brand .brand-icon-box img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .landing-brand-title {
+    font-size: 16px;
+  }
+
+  .landing-brand-tagline {
+    font-size: 10.5px;
+  }
+
+  .landing-header-actions {
+    gap: 8px;
+  }
+
+  .landing-header-actions .header-icon-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+
+  .landing-header-actions .btn-secondary.btn-sm {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-header-container {
+    padding: 0 12px;
+    height: 58px;
+    gap: 8px;
+  }
+
+  .landing-brand {
+    gap: 8px;
+  }
+
+  .landing-brand .brand-icon-box {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+  }
+
+  .landing-brand .brand-icon-box img {
+    width: 19px;
+    height: 19px;
+  }
+
+  .landing-brand-title {
+    font-size: 15px;
+    letter-spacing: -0.2px;
+  }
+
+  .landing-brand-tagline {
+    font-size: 9.5px;
+  }
+
+  .landing-header-actions {
+    gap: 6px;
+  }
+
+  .landing-header-actions .header-icon-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .landing-header-actions .btn-secondary.btn-sm {
+    height: 34px;
+    padding: 0 9px;
+    font-size: 12px;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .landing-header-container {
+    padding: 0 8px;
+    height: 54px;
+    gap: 6px;
+  }
+
+  .landing-brand {
+    gap: 6px;
+  }
+
+  .landing-brand .brand-icon-box {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+  }
+
+  .landing-brand .brand-icon-box img {
+    width: 17px;
+    height: 17px;
+  }
+
+  .landing-brand-title {
+    font-size: 13.5px;
+  }
+
+  .landing-brand-tagline {
+    font-size: 8.5px;
+  }
+
+  .landing-header-actions {
+    gap: 4px;
+  }
+
+  .landing-header-actions .header-icon-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .landing-header-actions .btn-secondary.btn-sm {
+    height: 30px;
+    padding: 0 7px;
+    font-size: 11px;
+    gap: 4px;
+  }
+}
+
 /* Page Content Body */
 .page-content-body {
   flex: 1;

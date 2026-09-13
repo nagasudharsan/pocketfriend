@@ -296,10 +296,11 @@
   </div>
 
   <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
   <script>
     let currentMode = 'expense';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       if (!checkAuth(true)) return;
       setupLayout('add');
 
@@ -309,7 +310,7 @@
       }
 
       // Render custom categories
-      renderCustomCategories();
+      await renderCustomCategories();
 
       const urlParams = new URLSearchParams(window.location.search);
       const requestedType = urlParams.get('type');
@@ -325,14 +326,26 @@
       }
     });
 
-    function renderCustomCategories(selectedCat = null) {
+    async function renderCustomCategories(selectedCat = null) {
+      // 1. Fetch Categories from MySQL Backend
+      let customExpenseCats = [];
+      let customIncomeCats = [];
+
+      const catRes = await CategoriesAPI.getAll();
+      if (catRes.success && Array.isArray(catRes.data)) {
+        customExpenseCats = catRes.data.filter(c => c.type === 'expense' && !c.isDefault).map(c => c.name);
+        customIncomeCats = catRes.data.filter(c => c.type === 'income' && !c.isDefault).map(c => c.name);
+      } else {
+        customExpenseCats = getUserCustomCategories();
+        customIncomeCats = getUserCustomIncomeCategories();
+      }
+
       // 1. Render Expense Custom Categories
       const expenseContainer = document.getElementById('expense-categories-grid');
       if (expenseContainer) {
         const addExpenseBtn = document.getElementById('btn-add-category');
         expenseContainer.querySelectorAll('.custom-dynamic-cat-btn').forEach(el => el.remove());
 
-        const customExpenseCats = getUserCustomCategories();
         customExpenseCats.forEach(catName => {
           const btn = document.createElement('button');
           btn.type = 'button';
@@ -358,7 +371,6 @@
         const addIncomeBtn = document.getElementById('btn-add-income-category');
         incomeContainer.querySelectorAll('.custom-dynamic-income-cat-btn').forEach(el => el.remove());
 
-        const customIncomeCats = getUserCustomIncomeCategories();
         customIncomeCats.forEach(catName => {
           const btn = document.createElement('button');
           btn.type = 'button';
@@ -389,11 +401,11 @@
       showConfirmModal(
         'Remove this category?',
         `Are you sure you want to permanently remove <strong>${escapeHtml(catName)}</strong> from your categories?`,
-        () => {
+        async () => {
           removeCustomCategory(catName);
           const currentCat = document.getElementById('tx-category').value;
           const nextSelected = (currentCat && currentCat.toLowerCase() === catName.toLowerCase()) ? 'Food' : currentCat;
-          renderCustomCategories(nextSelected);
+          await renderCustomCategories(nextSelected);
           showToast(`Category "${catName}" removed`, 'info');
         },
         'Remove',
@@ -407,11 +419,11 @@
       showConfirmModal(
         'Remove this category?',
         `Are you sure you want to permanently remove <strong>${escapeHtml(catName)}</strong> from your categories?`,
-        () => {
+        async () => {
           removeCustomIncomeCategory(catName);
           const currentCat = document.getElementById('tx-category').value;
           const nextSelected = (currentCat && currentCat.toLowerCase() === catName.toLowerCase()) ? 'Pocket Money' : currentCat;
-          renderCustomCategories(nextSelected);
+          await renderCustomCategories(nextSelected);
           showToast(`Category "${catName}" removed`, 'info');
         },
         'Remove',
@@ -438,7 +450,7 @@
       }
     }
 
-    function handleCreateCategorySubmit(e) {
+    async function handleCreateCategorySubmit(e) {
       e.preventDefault();
       const input = document.getElementById('new-category-input');
       const catName = input.value.trim();
@@ -449,16 +461,28 @@
         return;
       }
 
-      const result = currentMode === 'income' ? addCustomIncomeCategory(catName) : addCustomCategory(catName);
-      if (!result.success) {
-        showToast(result.message, 'error');
-        input.focus();
-        return;
-      }
+      // Call Backend API to save category in MySQL
+      const apiRes = await CategoriesAPI.create({
+        name: catName,
+        type: currentMode
+      });
 
-      closeAddCategoryModal();
-      renderCustomCategories(result.name);
-      showToast(`Category "${result.name}" added! 🎉`, 'success');
+      if (apiRes.success) {
+        closeAddCategoryModal();
+        await renderCustomCategories(catName);
+        showToast(`Category "${catName}" added to MySQL! 🎉`, 'success');
+      } else {
+        // Fallback
+        const result = currentMode === 'income' ? addCustomIncomeCategory(catName) : addCustomCategory(catName);
+        if (!result.success) {
+          showToast(result.message, 'error');
+          input.focus();
+          return;
+        }
+        closeAddCategoryModal();
+        await renderCustomCategories(result.name);
+        showToast(`Category "${result.name}" added! 🎉`, 'success');
+      }
     }
 
     function switchTxType(type) {
@@ -512,7 +536,7 @@
       amountInput.value = current + val;
     }
 
-    function handleTransactionSubmit(e) {
+    async function handleTransactionSubmit(e) {
       e.preventDefault();
 
       const amountInput = document.getElementById('tx-amount');
@@ -532,7 +556,7 @@
 
       if (type === 'expense') {
         const { balance } = calculateBalance();
-        if (amount > balance) {
+        if (amount > balance && balance > 0) {
           showConfirmModal(
             '⚠️ Insufficient Balance Warning',
             `This expense of <strong>${formatCurrency(amount)}</strong> exceeds your available balance of <strong>${formatCurrency(balance)}</strong>. Do you still wish to record it?`,
@@ -546,19 +570,27 @@
         }
       }
 
-      executeSaveTransaction({ type, amount, category, description, date, paymentMethod });
+      await executeSaveTransaction({ type, amount, category, description, date, paymentMethod });
     }
 
-    function executeSaveTransaction(txData) {
-      saveTransaction(txData);
-      showToast(`${txData.type === 'income' ? '+' : '-'}${formatCurrency(txData.amount)} saved! 🎉`, 'success');
-
+    async function executeSaveTransaction(txData) {
       const submitBtn = document.getElementById('btn-save-tx');
       if (submitBtn) submitBtn.disabled = true;
 
+      // 1. Submit to Node.js / Express Backend
+      const apiRes = await TransactionsAPI.create(txData);
+
+      if (apiRes.success) {
+        showToast(apiRes.message || `${txData.type === 'income' ? '+' : '-'}${formatCurrency(txData.amount)} saved in MySQL! 🎉`, 'success');
+      } else {
+        // Fallback to local storage
+        saveTransaction(txData);
+        showToast(`${txData.type === 'income' ? '+' : '-'}${formatCurrency(txData.amount)} saved! 🎉`, 'success');
+      }
+
       setTimeout(() => {
         window.location.href = 'dashboard.html';
-      }, 700);
+      }, 600);
     }
   </script>
 </body>

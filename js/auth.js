@@ -1,6 +1,6 @@
 /**
  * Pocket Friend - Authentication Handler (Sign Up & Login)
- * Pure Vanilla JavaScript with User-Specific Data Isolation
+ * Integrated with Node.js / Express Backend & MySQL Database
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- SIGNUP PAGE HANDLER ---
   const signupForm = document.getElementById('signup-form');
   if (signupForm) {
-    signupForm.addEventListener('submit', (e) => {
+    signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const nameInput = document.getElementById('signup-name');
@@ -51,43 +51,58 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const users = getUsers();
-      const userExists = users.some(u => u.email.toLowerCase() === email);
-      if (userExists) {
-        showToast('An account with this email already exists. Please log in.', 'error');
-        return;
+      // Disable button during request
+      const submitBtn = signupForm.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating Account...';
       }
 
-      // 1. Generate unique user ID
-      const userId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+      try {
+        // Call Backend API
+        const response = await AuthAPI.register(name, email, password);
 
-      const newUser = {
-        id: userId,
-        name,
-        email: email,
-        password,
-        createdAt: new Date().toISOString()
-      };
+        if (response.success && response.token) {
+          setAuthToken(response.token);
+          setCurrentUser(response.user);
+          showToast(response.message || `Welcome to Pocket Friend, ${name}! 🎉`, 'success');
 
-      // 2, 3, 4, 5, 6. Save user & initialize separate empty arrays (Zero balance, 0 tx, 0 budgets, 0 goals)
-      saveUser(newUser);
-      initNewUserData(userId);
-
-      // 7. Set this user as currentUser
-      setCurrentUser(newUser);
-
-      showToast(`Welcome to Pocket Friend, ${name}! 🎉`, 'success');
-
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 700);
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 700);
+        } else {
+          // If network error and backend is offline, support client fallback
+          if (response.isNetworkError) {
+            console.warn('[Auth] Backend unavailable, initializing local isolated account.');
+            const userId = 'usr_' + Date.now();
+            const newUser = { id: userId, name, email, createdAt: new Date().toISOString() };
+            saveUser(newUser);
+            initNewUserData(userId);
+            setCurrentUser(newUser);
+            showToast(`Welcome to Pocket Friend, ${name}! 🎉`, 'success');
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+          } else {
+            showToast(response.message || 'Registration failed. Please try again.', 'error');
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = '✨ Create Free Account';
+            }
+          }
+        }
+      } catch (err) {
+        showToast('Registration error occurred.', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '✨ Create Free Account';
+        }
+      }
     });
   }
 
   // --- LOGIN PAGE HANDLER ---
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const emailInput = document.getElementById('login-email');
@@ -102,39 +117,61 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const users = getUsers();
-      const matchedUser = users.find(u => u.email.toLowerCase() === email && u.password === password);
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Logging in...';
+      }
 
-      if (matchedUser) {
-        // Set currentUser - only matchedUser's isolated data will be loaded
-        setCurrentUser(matchedUser);
-        if (rememberMe) {
-          localStorage.setItem('pocketfriend_remember_email', email);
-        } else {
-          localStorage.removeItem('pocketfriend_remember_email');
-        }
+      try {
+        // Call Backend API
+        const response = await AuthAPI.login(email, password);
 
-        showToast(`Welcome back, ${matchedUser.name}! 👋`, 'success');
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 600);
-      } else {
-        // Special check for demo credentials
-        if ((email === 'demo@pocketfriend.com' || email === 'demo@pocketpal.com') && password === 'demo123') {
-          const demoUser = initDemoData(false);
-          setCurrentUser(demoUser);
-          showToast('Welcome to Pocket Friend Demo! 🎉', 'success');
+        if (response.success && response.token) {
+          setAuthToken(response.token);
+          setCurrentUser(response.user);
+
+          if (rememberMe) {
+            localStorage.setItem('pocketfriend_remember_email', email);
+          } else {
+            localStorage.removeItem('pocketfriend_remember_email');
+          }
+
+          showToast(response.message || `Welcome back, ${response.user?.name || 'Student'}! 👋`, 'success');
           setTimeout(() => {
             window.location.href = 'dashboard.html';
           }, 600);
         } else {
-          showToast('Invalid email or password. Please try again.', 'error');
+          // If network error and backend is offline, check local credentials
+          if (response.isNetworkError) {
+            const users = getUsers();
+            const matchedUser = users.find(u => u.email.toLowerCase() === email && u.password === password);
+            if (matchedUser) {
+              setCurrentUser(matchedUser);
+              if (rememberMe) localStorage.setItem('pocketfriend_remember_email', email);
+              showToast(`Welcome back, ${matchedUser.name}! 👋`, 'success');
+              setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+              return;
+            }
+          }
+
+          showToast(response.message || 'Invalid email or password. Please try again.', 'error');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Log In &rarr;';
+          }
+        }
+      } catch (err) {
+        showToast('Login error occurred.', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Log In &rarr;';
         }
       }
     });
 
     // Autofill remembered email if available
-    const savedEmail = localStorage.getItem('pocketfriend_remember_email') || localStorage.getItem('pocketpal_remember_email');
+    const savedEmail = localStorage.getItem('pocketfriend_remember_email');
     if (savedEmail) {
       const emailInput = document.getElementById('login-email');
       if (emailInput) emailInput.value = savedEmail;
@@ -162,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         showConfirmModal(
           'Password Reset Info',
-          'Pocket Friend is a client-side student privacy application where all accounts are stored securely in your local browser storage. For the demo account, use email: <b>demo@pocketfriend.com</b> and password: <b>demo123</b>.',
+          'For security, password resets are processed by your Pocket Friend administrator. If you are using a local account, please contact support or re-register with your college email.',
           () => {},
           'Understood'
         );

@@ -1,6 +1,7 @@
 /**
  * Pocket Friend - Transactions History Controller
  * Dual Desktop Table & Mobile Card Activity Engine
+ * Connected to Node.js / Express REST API & MySQL Database
  */
 
 let currentTransactions = [];
@@ -15,8 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
   bindFilterEvents();
 });
 
-function initTransactionsView() {
-  currentTransactions = getTransactions();
+async function initTransactionsView() {
+  await fetchAndRefreshTransactions();
+}
+
+async function fetchAndRefreshTransactions() {
+  const apiRes = await TransactionsAPI.getAll();
+  if (apiRes.success && Array.isArray(apiRes.data)) {
+    currentTransactions = apiRes.data;
+  } else {
+    currentTransactions = getTransactions();
+  }
   applyFiltersAndRender();
 }
 
@@ -80,7 +90,7 @@ function applyFiltersAndRender() {
 
   // Category filter
   if (categoryVal !== 'all') {
-    filtered = filtered.filter(t => t.category.toLowerCase() === categoryVal.toLowerCase());
+    filtered = filtered.filter(t => t.category && t.category.toLowerCase() === categoryVal.toLowerCase());
   }
 
   // Sort
@@ -216,7 +226,7 @@ function renderMobileCards(list) {
 
 // Edit Modal Handlers
 window.openEditModal = function(id) {
-  const tx = currentTransactions.find(t => t.id === id);
+  const tx = currentTransactions.find(t => String(t.id) === String(id));
   if (!tx) return;
 
   editingTransactionId = id;
@@ -239,7 +249,7 @@ function closeEditModal() {
   editingTransactionId = null;
 }
 
-function handleSaveEditedTransaction(e) {
+async function handleSaveEditedTransaction(e) {
   e.preventDefault();
 
   const id = document.getElementById('edit-tx-id').value;
@@ -255,44 +265,53 @@ function handleSaveEditedTransaction(e) {
     return;
   }
 
-  const updated = updateTransaction({
-    id,
+  const updatedPayload = {
     type,
     amount,
     category,
     date,
     description: description || category,
     paymentMethod
-  });
+  };
 
-  if (updated) {
-    showToast('Transaction updated successfully! ✨', 'success');
-    closeEditModal();
-    currentTransactions = getTransactions();
-    applyFiltersAndRender();
+  // Call Backend API
+  const apiRes = await TransactionsAPI.update(id, updatedPayload);
+
+  if (apiRes.success) {
+    showToast('Transaction updated successfully in MySQL! ✨', 'success');
   } else {
-    showToast('Failed to update transaction', 'error');
+    // Local fallback
+    updateTransaction({ id, ...updatedPayload });
+    showToast('Transaction updated successfully! ✨', 'success');
   }
+
+  closeEditModal();
+  await fetchAndRefreshTransactions();
 }
 
 // Delete Handler
 window.confirmDeleteTransaction = function(id) {
-  const tx = currentTransactions.find(t => t.id === id);
+  const tx = currentTransactions.find(t => String(t.id) === String(id));
   const title = 'Delete Transaction';
   const message = `Are you sure you want to delete this transaction <strong>"${escapeHtml(tx?.description || 'Transaction')}" (${formatCurrency(tx?.amount)})</strong>? This action cannot be undone.`;
 
-  showConfirmModal(title, message, () => {
-    deleteTransaction(id);
-    showToast('Transaction deleted', 'info');
-    currentTransactions = getTransactions();
-    applyFiltersAndRender();
+  showConfirmModal(title, message, async () => {
+    // Call Backend API
+    const apiRes = await TransactionsAPI.delete(id);
+    if (!apiRes.success && !apiRes.isNetworkError) {
+      showToast(apiRes.message || 'Failed to delete transaction', 'error');
+    } else {
+      deleteTransaction(id);
+      showToast('Transaction deleted', 'info');
+    }
+
+    await fetchAndRefreshTransactions();
   }, 'Delete', true);
 };
 
 // CSV Export Feature
 function exportTransactionsToCSV() {
-  const transactions = getTransactions();
-  if (transactions.length === 0) {
+  if (currentTransactions.length === 0) {
     showToast('No transactions to export', 'error');
     return;
   }
@@ -300,7 +319,7 @@ function exportTransactionsToCSV() {
   let csvContent = 'data:text/csv;charset=utf-8,';
   csvContent += 'Date,Description,Category,Type,Amount (INR),Payment Method\n';
 
-  transactions.forEach(t => {
+  currentTransactions.forEach(t => {
     const desc = `"${(t.description || '').replace(/"/g, '""')}"`;
     const cat = `"${(t.category || '').replace(/"/g, '""')}"`;
     const row = `${t.date},${desc},${cat},${t.type},${t.amount},${t.paymentMethod || 'Cash'}`;

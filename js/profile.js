@@ -1,7 +1,7 @@
 /**
  * Pocket Friend - Profile & Settings Controller
  * User Profile, Theme Preferences, Notification Toggles, Data Reset
- * Android Mobile App Architecture
+ * Connected to Node.js / Express Backend & MySQL Database
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,10 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
   bindProfileEvents();
 });
 
-function loadProfileAndSettings() {
-  const user = getCurrentUser();
+async function loadProfileAndSettings() {
+  let user = getCurrentUser();
   const settings = getSettings();
   const transactions = getTransactions();
+
+  // Try to sync latest user profile from MySQL Backend
+  const profileRes = await AuthAPI.getMe();
+  if (profileRes.success && profileRes.user) {
+    user = { ...user, ...profileRes.user };
+    setCurrentUser(user);
+  }
 
   if (user) {
     const nameInput = document.getElementById('profile-name');
@@ -47,7 +54,7 @@ function loadProfileAndSettings() {
   if (darkModeToggle) darkModeToggle.checked = currentTheme !== 'light';
   if (notificationsToggle) notificationsToggle.checked = settings.notifications !== false;
   if (budgetAlertsToggle) budgetAlertsToggle.checked = settings.budgetAlerts !== false;
-  if (currencySelect) currencySelect.value = settings.currency || 'INR';
+  if (currencySelect) currencySelect.value = user?.currency || settings.currency || 'INR';
 }
 
 function bindProfileEvents() {
@@ -59,7 +66,7 @@ function bindProfileEvents() {
 
   // Save profile changes
   if (profileForm) {
-    profileForm.addEventListener('submit', (e) => {
+    profileForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const nameInput = document.getElementById('profile-name');
@@ -70,6 +77,8 @@ function bindProfileEvents() {
 
       const name = nameInput.value.trim();
       const email = emailInput.value.trim();
+      const currency = currencySelect ? currencySelect.value : 'INR';
+      const currentTheme = localStorage.getItem('pocketfriend_theme') || 'dark';
 
       if (!name) {
         showToast('Please enter your name', 'error');
@@ -80,7 +89,8 @@ function bindProfileEvents() {
       const updatedUser = {
         ...currentUser,
         name,
-        email: email || currentUser.email
+        email: email || currentUser.email,
+        currency
       };
 
       setCurrentUser(updatedUser);
@@ -90,10 +100,22 @@ function bindProfileEvents() {
       saveSettings({
         notifications: notificationsToggle ? notificationsToggle.checked : true,
         budgetAlerts: budgetAlertsToggle ? budgetAlertsToggle.checked : true,
-        currency: currencySelect ? currencySelect.value : 'INR'
+        currency
       });
 
-      showToast('Profile & preferences saved! ✨', 'success');
+      // Update backend MySQL
+      const apiRes = await AuthAPI.updateProfile({
+        name,
+        currency,
+        theme: currentTheme
+      });
+
+      if (apiRes.success) {
+        showToast('Profile & preferences saved in MySQL! ✨', 'success');
+      } else {
+        showToast('Profile & preferences saved! ✨', 'success');
+      }
+
       loadProfileAndSettings();
     });
   }
@@ -146,6 +168,7 @@ function bindProfileEvents() {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
       showConfirmModal('Logout', 'Are you sure you want to log out of Pocket Friend?', () => {
+        removeAuthToken();
         setCurrentUser(null);
         showToast('Logged out', 'info');
         setTimeout(() => {
