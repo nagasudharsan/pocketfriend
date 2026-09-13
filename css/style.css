@@ -332,6 +332,134 @@ body:not(.light-mode) .sidebar-menu .nav-item.active a {
   text-overflow: ellipsis;
 }
 
+/* Sidebar Logout Power Button */
+.btn-logout {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: var(--radius-sm, 8px);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  color: #c4b5fd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  position: relative;
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.btn-logout svg.logout-icon {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  transition: transform 0.2s ease, stroke 0.2s ease;
+  display: block;
+}
+
+.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #f87171;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.35), 0 3px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px) scale(1.05);
+}
+
+.btn-logout:hover svg.logout-icon {
+  stroke: #f87171;
+  transform: scale(1.08);
+}
+
+.btn-logout:active {
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-logout:focus-visible {
+  outline: 2px solid var(--primary, #6366f1);
+  outline-offset: 2px;
+}
+
+body.light-mode .btn-logout {
+  background: rgba(99, 102, 241, 0.06);
+  border-color: rgba(99, 102, 241, 0.22);
+  color: #6366f1;
+}
+
+body.light-mode .btn-logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #dc2626;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+body.light-mode .btn-logout:hover svg.logout-icon {
+  stroke: #dc2626;
+}
+
+/* Profile / Full-Width Logout Action Buttons */
+#btn-profile-logout,
+.btn-logout-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-color: rgba(139, 92, 246, 0.35);
+  color: #c4b5fd;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+}
+
+#btn-profile-logout .logout-icon,
+.btn-logout-action .logout-icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  transition: transform 0.2s ease, stroke 0.2s ease;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#btn-profile-logout:hover,
+.btn-logout-action:hover {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #f87171;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.28), 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+#btn-profile-logout:hover .logout-icon,
+.btn-logout-action:hover .logout-icon {
+  stroke: #f87171;
+  transform: scale(1.08);
+}
+
+body.light-mode #btn-profile-logout,
+body.light-mode .btn-logout-action {
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #6366f1;
+}
+
+body.light-mode #btn-profile-logout:hover,
+body.light-mode .btn-logout-action:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #dc2626;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.18);
+}
+
+body.light-mode #btn-profile-logout:hover .logout-icon,
+body.light-mode .btn-logout-action:hover .logout-icon {
+  stroke: #dc2626;
+}
+
 /* ==========================================================================
    MAIN VIEWPORT & HEADER
    ========================================================================== */

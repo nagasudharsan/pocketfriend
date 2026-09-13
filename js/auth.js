@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;
 
-      // Validation
+      // 1. Validation
       if (!name) {
         showToast('Please enter your full name', 'error');
         nameInput.focus();
@@ -59,28 +59,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        // Call Backend API
+        // 2. Call Backend API
         const response = await AuthAPI.register(name, email, password);
 
-        if (response.success && response.token) {
-          setAuthToken(response.token);
-          setCurrentUser(response.user);
-          showToast(response.message || `Welcome to Pocket Friend, ${name}! 🎉`, 'success');
+        if (response.success) {
+          // Do NOT automatically log in or set tokens here
+          showToast(response.message || 'Account created successfully! Please log in.', 'success');
 
+          // Smooth redirect to Login page with registered email pre-filled (NO passwords in URL)
           setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = `login.html?registered=true&email=${encodeURIComponent(email)}`;
           }, 700);
         } else {
           // If network error and backend is offline, support client fallback
           if (response.isNetworkError) {
-            console.warn('[Auth] Backend unavailable, initializing local isolated account.');
+            console.warn('[Auth] Backend unavailable, initializing local account for login.');
             const userId = 'usr_' + Date.now();
-            const newUser = { id: userId, name, email, createdAt: new Date().toISOString() };
+            const newUser = { id: userId, name, email, password, createdAt: new Date().toISOString() };
             saveUser(newUser);
             initNewUserData(userId);
-            setCurrentUser(newUser);
-            showToast(`Welcome to Pocket Friend, ${name}! 🎉`, 'success');
-            setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+            showToast('Account created successfully! Please log in.', 'success');
+            setTimeout(() => {
+              window.location.href = `login.html?registered=true&email=${encodeURIComponent(email)}`;
+            }, 700);
           } else {
             showToast(response.message || 'Registration failed. Please try again.', 'error');
             if (submitBtn) {
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       } catch (err) {
-        showToast('Registration error occurred.', 'error');
+        showToast('Registration error occurred. Please try again.', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = '✨ Create Free Account';
@@ -102,6 +103,38 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- LOGIN PAGE HANDLER ---
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
+    // Check URL parameters for pre-filling newly registered user email
+    const urlParams = new URLSearchParams(window.location.search);
+    const registeredEmail = urlParams.get('email');
+    const isRegistered = urlParams.get('registered');
+
+    if (registeredEmail) {
+      const emailInput = document.getElementById('login-email');
+      const passwordInput = document.getElementById('login-password');
+      if (emailInput) {
+        emailInput.value = registeredEmail;
+      }
+      if (passwordInput) {
+        passwordInput.focus();
+      }
+      if (isRegistered === 'true') {
+        showToast('Account created successfully! Please enter your password to log in.', 'success');
+      }
+      // Clean query parameters from URL bar without page reload
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } else {
+      // Autofill remembered email if available
+      const savedEmail = localStorage.getItem('pocketfriend_remember_email');
+      if (savedEmail) {
+        const emailInput = document.getElementById('login-email');
+        if (emailInput) emailInput.value = savedEmail;
+        const rememberCheckbox = document.getElementById('remember-me');
+        if (rememberCheckbox) rememberCheckbox.checked = true;
+      }
+    }
+
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -162,22 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       } catch (err) {
-        showToast('Login error occurred.', 'error');
+        showToast('Login error occurred. Please try again.', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = 'Log In &rarr;';
         }
       }
     });
-
-    // Autofill remembered email if available
-    const savedEmail = localStorage.getItem('pocketfriend_remember_email');
-    if (savedEmail) {
-      const emailInput = document.getElementById('login-email');
-      if (emailInput) emailInput.value = savedEmail;
-      const rememberCheckbox = document.getElementById('remember-me');
-      if (rememberCheckbox) rememberCheckbox.checked = true;
-    }
 
     // Quick 1-Click Demo Login Handler
     const demoLoginBtn = document.getElementById('btn-quick-demo');
