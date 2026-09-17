@@ -4,7 +4,7 @@
  */
 
 const API_CONFIG = {
-  BASE_URL: 'http://localhost:5000/api',
+  BASE_URL: 'https://pocketfriend-backend.onrender.com/api',
   TOKEN_KEY: 'pocketfriend_auth_token',
   USER_KEY: 'pocketfriend_current_user'
 };
