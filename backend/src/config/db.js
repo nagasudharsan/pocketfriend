@@ -12,6 +12,9 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'pocket_friend',
   port: parseInt(process.env.DB_PORT, 10) || 3306,
+    ssl: {
+    rejectUnauthorized: true
+  },
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
